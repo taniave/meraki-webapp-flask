@@ -44,6 +44,7 @@ class Role(db.Model):
         self.permissions = 0
 
     def has_permission(self, perm):
+        print(self.permissions, perm)
         return self.permissions & perm == perm
 
     @staticmethod
