@@ -61,6 +61,11 @@
             <a href="{{ url_for('main.notification_center') }}" class="list-group-item list-group-item-action">
                 Notification Center</a>
             {% endif %}
+            <!-- New module sensor dashboard-->
+            {% if current_user.can(Permission.DASHBOARD) %}
+            <a href="{{ url_for('main.dashboard') }}" class="list-group-item list-group-item-action">
+                Sensor Dashboard</a>
+            {% endif %}
 
             {% else %}
             <a href="{{ url_for('auth.login') }}" class="list-group-item list-group-item-action">Log In</a>
