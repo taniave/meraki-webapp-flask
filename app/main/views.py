@@ -1,4 +1,10 @@
 import os
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
 from flask import render_template, redirect, current_app, request, flash, Markup
 from flask_login import login_required
 from . import main
@@ -10,6 +16,12 @@ from werkzeug.utils import secure_filename
 from .. import organization_data, dashboard_api_v0, helpers, dashboard_api_v1
 from ..decorators import permission_required
 from ..models import Permission
+
+TABLE_NAME = "InfoSensors"
+dynamodb_client = boto3.client('dynamodb',
+region_name="us-east-1")
+dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
+table = dynamodb.Table(TABLE_NAME)
 
 
 @main.route('/', methods=['GET'])
@@ -597,3 +609,109 @@ def update_org_data():
         return redirect('updateOrganization')
 
     return render_template('update.html', tabSubject="Update organization")
+
+# new module added
+# new module added
+# new module added
+# new module added -> Sensor information dashboard
+
+@main.route("/dashboard")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashboard():
+    return render_template("dashboard.html")
+
+
+@main.route("/dashboard2")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashTemp():
+    temperatura=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+    #data=response['Items']
+    for item in response['Items']:
+        #print(item)
+        for val in item['temperature']:
+            #print(val)
+            temperatura.append(val) 
+
+    df = pd.DataFrame(temperatura)
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 Temperature")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard2.html", graphJSON=graphJSON)
+
+@main.route("/dashboard3")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashHum():
+    humedad=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+    #data=response['Items']
+    for item in response['Items']:
+        #print(item)
+        for val in item['humidity']:
+            #print(val)
+            humedad.append(val) 
+
+    df = pd.DataFrame(humedad)
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 humidity")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard3.html", graphJSON=graphJSON)
+
+@main.route("/dashboard4")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashTempS2():
+    temperatura=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+    #data=response['Items']
+    for item in response['Items']:
+        #print(item)
+        for val in item['temperature']:
+            #print(val)
+            temperatura.append(val) 
+
+    df = pd.DataFrame(temperatura)
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 Temperature")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard4.html", graphJSON=graphJSON)
+
+@main.route("/dashboard5")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashHumS3():
+    humedad=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+    #data=response['Items']
+    for item in response['Items']:
+        #print(item)
+        for val in item['humidity']:
+            #print(val)
+            humedad.append(val) 
+
+    df = pd.DataFrame(humedad)
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 humidity")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard5.html", graphJSON=graphJSON)
+
+@main.route("/dashboard6")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def door():
+    puerta=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Puerta Principal'))
+    #print(response['Items'])
+    for item in response['Items']:
+    #print(item)
+        for val in item['door']:
+            #print(val)
+            puerta.append(val) 
+
+    df = pd.DataFrame(puerta)
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 humidity")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template("dashboard6.html", graphJSON=graphJSON)
