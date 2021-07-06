@@ -52,7 +52,7 @@ class Role(db.Model):
         roles = {
             'Field': [Permission.ADD_DEVICES, Permission.CREATE_NETWORK, Permission.REPLACE_DEVICES,
                       Permission.LOAD_BALANCING, Permission.MAP_MONITORING],
-            'View-only': [Permission.MAP_MONITORING],
+            'View-only': [Permission.MAP_MONITORING,Permission.DASHBOARD],
             'Privileged': [Permission.ADD_DEVICES, Permission.CREATE_NETWORK, Permission.REPLACE_DEVICES,
                            Permission.LOAD_BALANCING, Permission.BULK_CHANGE, Permission.DC_SWITCHOVER,
                            Permission.MAP_MONITORING],
