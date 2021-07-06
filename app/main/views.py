@@ -629,20 +629,16 @@ def dashboard():
 def dashTemp():
     temperatura=[]
     response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
-    #print(response['Items'])
+
     for item in response['Items']:
-        #print(item)
+
         for val in item['temperature']:
-            #print("original")
-            #print(val)
-            #print("/n")
+
             tmp=val['sensorValue']
             val['sensorValue']=float(tmp)
             temp=val['ts']
             val['ts'] = datetime.fromtimestamp(float(temp))
-            #print("convertido")
-            #print(val)
-            #print("/n")
+
             temperatura.append(val)
 
     df = pd.DataFrame(temperatura)
@@ -657,21 +653,16 @@ def dashTemp():
 def dashHum():
     humedad=[]
     response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
-    #data=response['Items']
+   
     for item in response['Items']:
-        #print(item)
+
         for val in item['humidity']:
-            #print("original")
-            #print(val)
-            #print("/n")
+  
             tmp=val['sensorValue']
             val['sensorValue']=float(tmp)
             temp=val['ts']
             val['ts'] = datetime.fromtimestamp(float(temp))
-            #print("convertido")
-            #print(val)
-            #print("/n")
-            #print(val)
+
             humedad.append(val) 
 
     df = pd.DataFrame(humedad)
@@ -686,21 +677,16 @@ def dashHum():
 def dashTempS2():
     temperatura=[]
     response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
-    #data=response['Items']
+  
     for item in response['Items']:
-        #print(item)
+        
         for val in item['temperature']:
-            #print("original")
-            #print(val)
-            #print("/n")
+
             tmp=val['sensorValue']
             val['sensorValue']=float(tmp)
             temp=val['ts']
             val['ts'] = datetime.fromtimestamp(float(temp))
-            #print("convertido")
-            #print(val)
-            #print("/n")
-            #print(val)
+
             temperatura.append(val) 
 
     df = pd.DataFrame(temperatura)
@@ -715,20 +701,16 @@ def dashTempS2():
 def dashHumS3():
     humedad=[]
     response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
-    #data=response['Items']
+    
     for item in response['Items']:
-        #print(item)
+        
         for val in item['humidity']:
-            #print("original")
-            #print(val)
-            #print("/n")
+
             tmp=val['sensorValue']
             val['sensorValue']=float(tmp)
             temp=val['ts']
             val['ts'] = datetime.fromtimestamp(float(temp))
-            #print("convertido")
-            #print(val)
-            #print("/n")
+
             humedad.append(val) 
 
     df = pd.DataFrame(humedad)
@@ -747,39 +729,27 @@ def door():
     open=0
     
     response = table.scan(FilterExpression=Attr('idSensor').eq('Puerta Principal'))
-    #print(response['Items'])
+    
     for item in response['Items']:
-    #print(item)
+    
         for val in item['door']:
-            #print("original")
-            #print(val)
-            #print("/n")
+
             tmp=val['sensorValue']
             val['sensorValue']=int(float(tmp))
             temp=val['ts']
             ban = datetime.fromtimestamp(float(temp))
             val['ts'] = ban
-
-            #print("convertido")
             if val['sensorValue'] == 0 and ban.strftime("%B") == curr_month:
                 close+=1
             if val['sensorValue'] == 1 and ban.strftime("%B") == curr_month:
                 open+=1
-
-            #print(ban.strftime("%B"))
-            #print(datetime.now().month)
-            
-            #print(datetime.strptime(str(val['ts']), "%Y-%m-%d %H:%M:%S"))
-            #print("convertido")
-            #print(val)
-            #print("/n")
             puerta.append(val)
+
     if puerta[-1]['sensorValue'] == 0:
         state = "Closed"
     if puerta[-1]['sensorValue'] == 1:
         state = "Opened"
-    print(puerta[-1]['ts']) 
-    print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
+    #print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
     Item ={
         "open": open,
         "close": close,
@@ -787,11 +757,6 @@ def door():
         "activity": state,
         "time": puerta[-1]['ts']
     }
-    """
-    df = pd.DataFrame(puerta)
-    fig = px.line(df, x="ts", y="sensorValue", title="Door Activity")
-    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    """
     return render_template("dashboard6.html", data=Item)
 
 @main.route("/dashboard7")
@@ -804,7 +769,7 @@ def control():
     temperat2=[]
     res = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
     response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
-    #print(res['idSensor'])
+  
     for item in res['Items']:
         for value in item['temperature']:
 
