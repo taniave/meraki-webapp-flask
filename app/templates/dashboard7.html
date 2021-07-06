@@ -20,52 +20,79 @@
     <body> 
         {% block body %}
         <div class="container">
-            <h2>Door Sensor Activity {{data['month']}} </h2>
+            <h2> Temperature and Humidity recent values </h2>
 
-            <table class="table">
-                <tbody>
+
+            <table class="table" >
+                <thead>
+                    <th></th>
+                    <th scope="col">Sensor {{data['sensor1']}}</th>
+                    <th scope="col">Last update: {{data['date']}}</th>
+                    <th></th>
+                </thead>
+                <tbody style="text-align: center;">
                   <tr>
-                    <th scope="row"><img src="static/images/open-door.png" alt="Open"></th>
+                    <th scope="row"><img src="static/images/temp.png" alt="Temperature"></th>
                     <td>                
                         <div class="card-columns">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
                                     <p class="card-text">
-                                        Opened {{data['open']}} times  
+                                        <h3>Temperature</h3>
+                                        {{data['temperature']}} °C
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><img src="static/images/door-closed.png" alt="Closed"></th>
+                    <th scope="row"><img src="static/images/humidity.png" alt="Humidity"></th>
                     <td>
                         <div class="card-columns">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
                                    
                                     <p class="card-text">
-                                        
-                                        Closed {{data['close']}} times
-                                   
+                                        <h3>Humidity</h3>
+                                        {{data['humidity']}}%
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </td>
                   </tr>
+                </tbody>
+            </table>
+            <table class="table" >
+                <thead>
+                    <th></th>
+                    <th scope="col">Sensor {{data['sensor2']}}</th>
+                    <th scope="col">Last update: {{data['date2']}}</th>
+                    <th></th>
+                </thead>
+                <tbody style="text-align: center;">
                   <tr>
-                    <th scope="row"><img src="static/images/time.png" alt="Time"></th>
+                    <th scope="row"><img src="static/images/temp.png" alt="Temperature"></th>
+                    <td>                
+                        <div class="card-columns">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <p class="card-text">
+                                        <h3>Temperature</h3>
+                                        {{data['temperature2']}} °C
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <th scope="row"><img src="static/images/humidity.png" alt="Humidity"></th>
                     <td>
                         <div class="card-columns">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
                                    
                                     <p class="card-text">
-                                        
-                                        Last time {{ data['activity']}} at {{data['time']}}
-                                   
+                                        <h3>Humidity</h3>
+                                        {{data['humidity2']}}%
                                     </p>
                                 </div>
                             </div>

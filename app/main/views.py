@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import plotly
 import plotly.express as px
+from datetime import datetime, timedelta
 from flask import render_template, redirect, current_app, request, flash, Markup
 from flask_login import login_required
 from . import main
@@ -619,7 +620,7 @@ def update_org_data():
 @login_required
 @permission_required(Permission.DASHBOARD)
 def dashboard():
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", tabSubject="Dashboard")
 
 
 @main.route("/dashboard2")
@@ -628,12 +629,21 @@ def dashboard():
 def dashTemp():
     temperatura=[]
     response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
-    #data=response['Items']
+    #print(response['Items'])
     for item in response['Items']:
         #print(item)
         for val in item['temperature']:
+            #print("original")
             #print(val)
-            temperatura.append(val) 
+            #print("/n")
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+            #print("convertido")
+            #print(val)
+            #print("/n")
+            temperatura.append(val)
 
     df = pd.DataFrame(temperatura)
     fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 Temperature")
@@ -651,6 +661,16 @@ def dashHum():
     for item in response['Items']:
         #print(item)
         for val in item['humidity']:
+            #print("original")
+            #print(val)
+            #print("/n")
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+            #print("convertido")
+            #print(val)
+            #print("/n")
             #print(val)
             humedad.append(val) 
 
@@ -670,6 +690,16 @@ def dashTempS2():
     for item in response['Items']:
         #print(item)
         for val in item['temperature']:
+            #print("original")
+            #print(val)
+            #print("/n")
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+            #print("convertido")
+            #print(val)
+            #print("/n")
             #print(val)
             temperatura.append(val) 
 
@@ -689,7 +719,16 @@ def dashHumS3():
     for item in response['Items']:
         #print(item)
         for val in item['humidity']:
+            #print("original")
             #print(val)
+            #print("/n")
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+            #print("convertido")
+            #print(val)
+            #print("/n")
             humedad.append(val) 
 
     df = pd.DataFrame(humedad)
@@ -702,16 +741,113 @@ def dashHumS3():
 @login_required
 @permission_required(Permission.DASHBOARD)
 def door():
+    curr_month=datetime.now().strftime("%B")
     puerta=[]
+    close=0
+    open=0
+    
     response = table.scan(FilterExpression=Attr('idSensor').eq('Puerta Principal'))
     #print(response['Items'])
     for item in response['Items']:
     #print(item)
         for val in item['door']:
+            #print("original")
             #print(val)
-            puerta.append(val) 
+            #print("/n")
+            tmp=val['sensorValue']
+            val['sensorValue']=int(float(tmp))
+            temp=val['ts']
+            ban = datetime.fromtimestamp(float(temp))
+            val['ts'] = ban
 
+            #print("convertido")
+            if val['sensorValue'] == 0 and ban.strftime("%B") == curr_month:
+                close+=1
+            if val['sensorValue'] == 1 and ban.strftime("%B") == curr_month:
+                open+=1
+
+            #print(ban.strftime("%B"))
+            #print(datetime.now().month)
+            
+            #print(datetime.strptime(str(val['ts']), "%Y-%m-%d %H:%M:%S"))
+            #print("convertido")
+            #print(val)
+            #print("/n")
+            puerta.append(val)
+    if puerta[-1]['sensorValue'] == 0:
+        state = "Closed"
+    if puerta[-1]['sensorValue'] == 1:
+        state = "Opened"
+    print(puerta[-1]['ts']) 
+    print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
+    Item ={
+        "open": open,
+        "close": close,
+        "month": curr_month,
+        "activity": state,
+        "time": puerta[-1]['ts']
+    }
+    """
     df = pd.DataFrame(puerta)
-    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 humidity")
+    fig = px.line(df, x="ts", y="sensorValue", title="Door Activity")
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template("dashboard6.html", graphJSON=graphJSON)
+    """
+    return render_template("dashboard6.html", data=Item)
+
+@main.route("/dashboard7")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def control():
+    hum=[]
+    temperat=[]
+    hum2=[]
+    temperat2=[]
+    res = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+    #print(res['idSensor'])
+    for item in res['Items']:
+        for value in item['temperature']:
+
+            tmp=value['sensorValue']
+            value['sensorValue']=float(tmp)
+            temp=value['ts']
+            value['ts'] = datetime.fromtimestamp(float(temp))
+            temperat.append(value)
+
+        for val in item['humidity']:
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts']= datetime.fromtimestamp(float(temp))
+            hum.append(val)
+
+    for item in response['Items']:
+        for value in item['temperature']:
+
+            tmp=value['sensorValue']
+            value['sensorValue']=float(tmp)
+            temp=value['ts']
+            value['ts'] = datetime.fromtimestamp(float(temp))
+            temperat2.append(value)
+
+        for val in item['humidity']:
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts']= datetime.fromtimestamp(float(temp))
+            hum2.append(val)
+    dat ={
+        "sensor1": "TempE1",
+        "humidity": int(hum[-1]['sensorValue']),
+        "date": hum[-1]['ts'],
+        "temperature": int(temperat[-1]['sensorValue']),
+        "date_temp": temperat[-1]['ts'],
+        "sensor2": "Temp C1",
+        "humidity2": int(hum2[-1]['sensorValue']),
+        "date2": hum2[-1]['ts'],
+        "temperature2": int(temperat2[-1]['sensorValue']),
+        "date_temp2": temperat2[-1]['ts'],
+
+    }
+
+    return render_template("dashboard7.html", data=dat)
