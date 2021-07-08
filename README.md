@@ -102,7 +102,9 @@ The following list ilustrates how to run the code locally.
     LOGO_URL="https://www.xxxxxxxxx.com/xxxxxxx.png"
     ADMIN_MAIL="admin@xxxxx.com"
     ADMIN_PASSWORD="UltraSuperSecurePassword"    
-    ADMIN_NAME="Mr. Admin"    
+    ADMIN_NAME="Mr. Admin"
+    AWS_ACCESS_KEY_ID="AWSAccessKeyID"
+    AWS_SECRET_ACCESS_KEY="AWSSecretAccessKey"
     ```
   
   5. Create FLASK_APP environment variable
