@@ -162,5 +162,6 @@ For simplicity, in the map view, close MX devices are grouped together. If at le
 
 When working with clusters, a table listing all the MX devices within the cluster is shown. This table shows the status of the devices, as well as a button that redirects to that device on the original Meraki dashboard.
 
+## Dashboard Monitoring Module
 
 
