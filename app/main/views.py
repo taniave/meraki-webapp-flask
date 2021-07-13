@@ -641,7 +641,7 @@ def dashTemp():
 
             temperatura.append(val)
 
-    df = pd.DataFrame(temperatura)
+    df = pd.DataFrame(temperatura[-8:])
     fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 Temperature")
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
@@ -665,7 +665,7 @@ def dashHum():
 
             humedad.append(val) 
 
-    df = pd.DataFrame(humedad)
+    df = pd.DataFrame(humedad[-8:])
     fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 humidity")
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
@@ -689,7 +689,7 @@ def dashTempS2():
 
             temperatura.append(val) 
 
-    df = pd.DataFrame(temperatura)
+    df = pd.DataFrame(temperatura[-8:])
     fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 Temperature")
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
@@ -713,7 +713,7 @@ def dashHumS3():
 
             humedad.append(val) 
 
-    df = pd.DataFrame(humedad)
+    df = pd.DataFrame(humedad[-8:])
     fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 humidity")
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
@@ -730,6 +730,8 @@ def door():
     
     response = table.scan(FilterExpression=Attr('idSensor').eq('Puerta Principal'))
     
+    
+    
     for item in response['Items']:
     
         for val in item['door']:
@@ -739,12 +741,23 @@ def door():
             temp=val['ts']
             ban = datetime.fromtimestamp(float(temp))
             val['ts'] = ban
+            """
             if val['sensorValue'] == 0 and ban.strftime("%B") == curr_month:
                 close+=1
             if val['sensorValue'] == 1 and ban.strftime("%B") == curr_month:
                 open+=1
-            puerta.append(val)
+            """
 
+            puerta.append(val)
+    temporal = puerta[-8:]
+    for dat in temporal:
+        if dat['sensorValue'] == 0 and dat['ts'].strftime("%B") == curr_month:
+            close+=1
+        if dat['sensorValue'] == 1 and dat['ts'].strftime("%B") == curr_month:
+            open+=1
+        #print(dat)
+    #print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
+    #print(puerta[-8:])
     if puerta[-1]['sensorValue'] == 0:
         state = "Closed"
     if puerta[-1]['sensorValue'] == 1:
