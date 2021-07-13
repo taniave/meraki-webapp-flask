@@ -102,7 +102,9 @@ The following list ilustrates how to run the code locally.
     LOGO_URL="https://www.xxxxxxxxx.com/xxxxxxx.png"
     ADMIN_MAIL="admin@xxxxx.com"
     ADMIN_PASSWORD="UltraSuperSecurePassword"    
-    ADMIN_NAME="Mr. Admin"    
+    ADMIN_NAME="Mr. Admin"
+    AWS_ACCESS_KEY_ID="AWSAccessKeyID"
+    AWS_SECRET_ACCESS_KEY="AWSSecretAccessKey"
     ```
   
   5. Create FLASK_APP environment variable
@@ -162,5 +164,6 @@ For simplicity, in the map view, close MX devices are grouped together. If at le
 
 When working with clusters, a table listing all the MX devices within the cluster is shown. This table shows the status of the devices, as well as a button that redirects to that device on the original Meraki dashboard.
 
+## Dashboard Monitoring Module
 
 
