@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+    <!--link rel="stylesheet" href="{{ url_for('static', filename='css/style_dash.css') }}"-->
+
+
+{% block page_content %}
+
+    <div class="wrapper">
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame1" src="dashboard2" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame2" src="dashboard3" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame3" src="dashboard4" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame4" src="dashboard5" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame5" src="dashboard6" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+        <div class="item">
+            <div class="iframe">
+                <iframe id="frame5" src="dashboard7" width="1024" height="768" style="border:none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+""" Creates user-roles and gives access to certain sections of the webapp """
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -15,6 +16,7 @@ class Permission:
     MAP_MONITORING = 128
     ADD_USERS = 256
     APP_SETTINGS = 512
+    DASHBOARD = 1024
 
 
 class Role(db.Model):
@@ -42,7 +44,7 @@ class Role(db.Model):
         self.permissions = 0
 
     def has_permission(self, perm):
-        print(self.permissions, perm)
+        #print(self.permissions, perm)
         return self.permissions & perm == perm
 
     @staticmethod
@@ -50,13 +52,13 @@ class Role(db.Model):
         roles = {
             'Field': [Permission.ADD_DEVICES, Permission.CREATE_NETWORK, Permission.REPLACE_DEVICES,
                       Permission.LOAD_BALANCING, Permission.MAP_MONITORING],
-            'View-only': [Permission.MAP_MONITORING],
+            'View-only': [Permission.MAP_MONITORING,Permission.DASHBOARD],
             'Privileged': [Permission.ADD_DEVICES, Permission.CREATE_NETWORK, Permission.REPLACE_DEVICES,
                            Permission.LOAD_BALANCING, Permission.BULK_CHANGE, Permission.DC_SWITCHOVER,
                            Permission.MAP_MONITORING],
             'Administrator': [Permission.ADD_DEVICES, Permission.CREATE_NETWORK, Permission.REPLACE_DEVICES,
                               Permission.LOAD_BALANCING, Permission.BULK_CHANGE, Permission.DC_SWITCHOVER,
-                              Permission.MAP_MONITORING, Permission.ADD_USERS, Permission.APP_SETTINGS]
+                              Permission.MAP_MONITORING, Permission.ADD_USERS, Permission.APP_SETTINGS, Permission.DASHBOARD]
         }
         default_role = 'View-only'
 

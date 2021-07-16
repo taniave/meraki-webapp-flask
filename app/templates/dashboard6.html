@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <style>
+                        
+            body {
+                font-family: 'Cisco';
+            }
+
+            /* Cisco font */
+            @font-face {
+                font-family: 'Cisco';
+                src: url('../static/fonts/CiscoSansTTExtraLight.woff2') format('woff2') 
+            }
+            h2{
+                color: #6FB73A;
+            }
+        </style>
+    </head>
+
+    <body> 
+        {% block body %}
+        <div class="container">
+            <h2>Door Sensor Activity {{data['month']}} </h2>
+
+            <table class="table">
+                <tbody>
+                  <tr>
+                    <th scope="row"><img src="static/images/open-door.png" alt="Open"></th>
+                    <td>                
+                        <div class="card-columns">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <p class="card-text">
+                                        Opened {{data['open']}} times  
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><img src="static/images/door-closed.png" alt="Closed"></th>
+                    <td>
+                        <div class="card-columns">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                   
+                                    <p class="card-text">
+                                        
+                                        Closed {{data['close']}} times
+                                   
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><img src="static/images/time.png" alt="Time"></th>
+                    <td>
+                        <div class="card-columns">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                   
+                                    <p class="card-text">
+                                        
+                                        Last time {{ data['activity']}} at {{data['time']}}
+                                   
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+                                        
+            
+          </div>
+        {% endblock %}
+
+
+        
+
+    </body>
+</html>

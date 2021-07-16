@@ -1,4 +1,11 @@
 import os
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
+from datetime import datetime, timedelta
 from flask import render_template, redirect, current_app, request, flash, Markup
 from flask_login import login_required
 from . import main
@@ -10,6 +17,12 @@ from werkzeug.utils import secure_filename
 from .. import organization_data, dashboard_api_v0, helpers, dashboard_api_v1
 from ..decorators import permission_required
 from ..models import Permission
+
+TABLE_NAME = "InfoSensors"
+dynamodb_client = boto3.client('dynamodb',
+region_name="us-east-1")
+dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
+table = dynamodb.Table(TABLE_NAME)
 
 
 @main.route('/', methods=['GET'])
@@ -597,3 +610,222 @@ def update_org_data():
         return redirect('updateOrganization')
 
     return render_template('update.html', tabSubject="Update organization")
+
+# new module added
+# new module added
+# new module added
+# new module added -> Sensor information dashboard
+
+@main.route("/dashboard")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashboard():
+    return render_template("dashboard.html", tabSubject="Dashboard")
+
+
+@main.route("/dashboard2")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashTemp():
+    temperatura=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+
+    for item in response['Items']:
+
+        for val in item['temperature']:
+
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+
+            temperatura.append(val)
+
+    df = pd.DataFrame(temperatura[-8:])
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 Temperature")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard2.html", graphJSON=graphJSON)
+
+@main.route("/dashboard3")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashHum():
+    humedad=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+   
+    for item in response['Items']:
+
+        for val in item['humidity']:
+  
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+
+            humedad.append(val) 
+
+    df = pd.DataFrame(humedad[-8:])
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor Temp C1 humidity")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard3.html", graphJSON=graphJSON)
+
+@main.route("/dashboard4")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashTempS2():
+    temperatura=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+  
+    for item in response['Items']:
+        
+        for val in item['temperature']:
+
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+
+            temperatura.append(val) 
+
+    df = pd.DataFrame(temperatura[-8:])
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 Temperature")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard4.html", graphJSON=graphJSON)
+
+@main.route("/dashboard5")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def dashHumS3():
+    humedad=[]
+    response = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+    
+    for item in response['Items']:
+        
+        for val in item['humidity']:
+
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts'] = datetime.fromtimestamp(float(temp))
+
+            humedad.append(val) 
+
+    df = pd.DataFrame(humedad[-8:])
+    fig = px.line(df, x="ts", y="sensorValue", title="Sensor TempE1 humidity")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return render_template("dashboard5.html", graphJSON=graphJSON)
+
+@main.route("/dashboard6")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def door():
+    curr_month=datetime.now().strftime("%B")
+    puerta=[]
+    close=0
+    open=0
+    
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Puerta Principal'))
+    
+    
+    
+    for item in response['Items']:
+    
+        for val in item['door']:
+
+            tmp=val['sensorValue']
+            val['sensorValue']=int(float(tmp))
+            temp=val['ts']
+            ban = datetime.fromtimestamp(float(temp))
+            val['ts'] = ban
+            """
+            if val['sensorValue'] == 0 and ban.strftime("%B") == curr_month:
+                close+=1
+            if val['sensorValue'] == 1 and ban.strftime("%B") == curr_month:
+                open+=1
+            """
+
+            puerta.append(val)
+    temporal = puerta[-8:]
+    for dat in temporal:
+        if dat['sensorValue'] == 0 and dat['ts'].strftime("%B") == curr_month:
+            close+=1
+        if dat['sensorValue'] == 1 and dat['ts'].strftime("%B") == curr_month:
+            open+=1
+        #print(dat)
+    #print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
+    #print(puerta[-8:])
+    if puerta[-1]['sensorValue'] == 0:
+        state = "Closed"
+    if puerta[-1]['sensorValue'] == 1:
+        state = "Opened"
+    #print("the dor has been opened " + str(open) + " and has been closed "  + str(close) + " times in " + curr_month )
+    Item ={
+        "open": open,
+        "close": close,
+        "month": curr_month,
+        "activity": state,
+        "time": puerta[-1]['ts']
+    }
+    return render_template("dashboard6.html", data=Item)
+
+@main.route("/dashboard7")
+@login_required
+@permission_required(Permission.DASHBOARD)
+def control():
+    hum=[]
+    temperat=[]
+    hum2=[]
+    temperat2=[]
+    res = table.scan(FilterExpression=Attr('idSensor').eq('TempE1'))
+    response = table.scan(FilterExpression=Attr('idSensor').eq('Temp C1'))
+  
+    for item in res['Items']:
+        for value in item['temperature']:
+
+            tmp=value['sensorValue']
+            value['sensorValue']=float(tmp)
+            temp=value['ts']
+            value['ts'] = datetime.fromtimestamp(float(temp))
+            temperat.append(value)
+
+        for val in item['humidity']:
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts']= datetime.fromtimestamp(float(temp))
+            hum.append(val)
+
+    for item in response['Items']:
+        for value in item['temperature']:
+
+            tmp=value['sensorValue']
+            value['sensorValue']=float(tmp)
+            temp=value['ts']
+            value['ts'] = datetime.fromtimestamp(float(temp))
+            temperat2.append(value)
+
+        for val in item['humidity']:
+            tmp=val['sensorValue']
+            val['sensorValue']=float(tmp)
+            temp=val['ts']
+            val['ts']= datetime.fromtimestamp(float(temp))
+            hum2.append(val)
+    dat ={
+        "sensor1": "TempE1",
+        "humidity": int(hum[-1]['sensorValue']),
+        "date": hum[-1]['ts'],
+        "temperature": int(temperat[-1]['sensorValue']),
+        "date_temp": temperat[-1]['ts'],
+        "sensor2": "Temp C1",
+        "humidity2": int(hum2[-1]['sensorValue']),
+        "date2": hum2[-1]['ts'],
+        "temperature2": int(temperat2[-1]['sensorValue']),
+        "date_temp2": temperat2[-1]['ts'],
+
+    }
+
+    return render_template("dashboard7.html", data=dat)
