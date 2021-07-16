@@ -166,4 +166,5 @@ When working with clusters, a table listing all the MX devices within the cluste
 
 ## Dashboard Monitoring Module
 
+The purpose of these new module is to show the data of 8 days from the current day, so the user knows what are the most resent measures of the sensors that have been configured and it shows the last measures of the sensors.
 
